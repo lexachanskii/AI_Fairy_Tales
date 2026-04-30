@@ -39,11 +39,13 @@ async def create_tale(
         )
     # ──────────────────────────────────────────────────────────────────────────
 
-    tale = await tale_service.create_tale(db, user_id, tale_data)
+    tale = await tale_service.create_tale(db, user_id, tale_data, current_user)
     return TaleResponse(
         id=tale.id,
         name=tale.name,
         genre=tale.genre,
+        moral=tale.moral,
+        hero=tale.hero,
         size=tale.size,
         content=tale.content,
         current_stage=len(tale.content),
@@ -66,6 +68,8 @@ async def get_current_tale(
         id=tale.id,
         name=tale.name,
         genre=tale.genre,
+        moral=tale.moral,
+        hero=tale.hero,
         size=tale.size,
         content=tale.content,
         current_stage=len(tale.content),

@@ -31,7 +31,7 @@ export default function RegisterPage() {
       <div className="card">
         <p className="brand">✦ AI Fairy Tales ✦</p>
         <h2>Создать аккаунт</h2>
-        <p className="subtitle">Войдите в мир магических историй</p>
+        <p className="subtitle">Создайте аккаунт родителя, а затем заполните отдельный профиль ребёнка для персональных сказок</p>
 
         {error && <div className="alert alert-error">{error}</div>}
 

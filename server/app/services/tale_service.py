@@ -3,8 +3,8 @@ from sqlalchemy import select
 from sqlalchemy.orm.attributes import flag_modified
 
 from app.models.tale import Tale
-from app.models.user import User
-from app.schemas.tale import TaleCreate, TaleSizeEnum
+from app.models.user import User, Sex
+from app.schemas.tale import TaleCreate, TaleSizeEnum, HeroModeEnum
 from app.services.ai_service import AIService
 
 
@@ -18,7 +18,30 @@ class TaleService:
         }
         self._ai_service = AIService()
 
-    async def create_tale(self, db: AsyncSession, user_id: int, tale_data: TaleCreate) -> Tale:
+    def _resolve_hero(self, user: User, tale_data: TaleCreate) -> str:
+        if tale_data.hero_mode == HeroModeEnum.PROFILE_CHILD:
+            sex_label = "мальчик" if user.sex == Sex.MALE else "девочка"
+            parts = [user.name or "ребёнок"]
+            if user.age:
+                parts.append(f"{user.age} лет")
+            parts.append(sex_label)
+            if user.hobby:
+                parts.append(f"увлечения: {user.hobby}")
+            return ", ".join(parts)
+
+        if tale_data.hero_mode == HeroModeEnum.RANDOM:
+            return "Случайный герой"
+
+        return (tale_data.hero_description or "").strip()
+
+    def _resolve_name(self, tale_data: TaleCreate) -> str:
+        name = (tale_data.name or "").strip()
+        if name:
+            return name
+        genre = tale_data.genre if tale_data.genre != "Случайный жанр" else "сказка"
+        return f"Новая {genre.lower()}"[:100]
+
+    async def create_tale(self, db: AsyncSession, user_id: int, tale_data: TaleCreate, user: User) -> Tale:
         result = await db.execute(select(Tale).where(Tale.user_id == user_id))
         old_tale = result.scalar_one_or_none()
         if old_tale:
@@ -26,8 +49,10 @@ class TaleService:
             await db.flush()
 
         tale = Tale(
-            name=tale_data.name,
+            name=self._resolve_name(tale_data),
             genre=tale_data.genre,
+            hero=self._resolve_hero(user, tale_data),
+            moral=(tale_data.moral or "Случайная мораль").strip(),
             size=self.size_map[tale_data.size],
             content=[],
             user_id=user_id,
@@ -84,7 +109,12 @@ class TaleService:
         if not tale.content:
             raise ValueError("Сказка пуста")
 
-        full_text = f"Название: {tale.name}\nЖанр: {tale.genre}\n\n"
+        full_text = (
+            f"Название: {tale.name}\n"
+            f"Главный герой: {tale.hero or 'не указан'}\n"
+            f"Жанр: {tale.genre}\n"
+            f"Мораль: {tale.moral or 'не указана'}\n\n"
+        )
         for part in tale.content:
             full_text += f"Часть {part['part_number']}:\n{part['assistant_response']}\n\n"
 

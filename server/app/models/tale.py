@@ -11,6 +11,8 @@ class Tale(Base):
 
     genre: Mapped[str] = mapped_column(String(100))
     name: Mapped[str] = mapped_column(String(100))
+    hero: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    moral: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     size: Mapped[int] = mapped_column(Integer)
     content: Mapped[list] = mapped_column(JSON)
 

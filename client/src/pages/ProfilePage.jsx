@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 
-const FIELD_LABELS = { name: 'Имя', age: 'Возраст', sex: 'Пол', hobby: 'Увлечение' }
+const FIELD_LABELS = { name: 'Имя ребёнка', age: 'Возраст ребёнка', sex: 'Пол ребёнка', hobby: 'Увлечения ребёнка' }
 
 export default function ProfilePage() {
   const nav = useNavigate()
@@ -69,7 +69,7 @@ export default function ProfilePage() {
   if (loading) return (
     <div className="page">
       <div className="card" style={{ textAlign: 'center' }}>
-        <span className="spinner" /> <span style={{ marginLeft: '.75rem', color: 'var(--text-dim)' }}>Загружаем профиль…</span>
+        <span className="spinner" /> <span style={{ marginLeft: '.75rem', color: 'var(--text-dim)' }}>Загружаем профиль ребёнка…</span>
       </div>
     </div>
   )
@@ -86,14 +86,15 @@ export default function ProfilePage() {
           <button className="btn btn-ghost btn-sm" onClick={handleLogout}>Выйти</button>
         </div>
 
-        <h2 style={{ marginBottom: '.75rem' }}>Мой профиль</h2>
+        <h2 style={{ marginBottom: '.75rem' }}>Профиль ребёнка</h2>
+        <p className="subtitle">Заполните данные ребёнка — они помогут создать сказку, где ребёнок сможет стать главным героем.</p>
 
         {/* Profile completeness status */}
         <div className={`profile-status ${isComplete ? 'complete' : 'incomplete'}`}>
           <span>
             {isComplete
-              ? '✦ Профиль заполнен — можно создавать сказки'
-              : `Заполните профиль перед генерацией`}
+              ? '✦ Профиль ребёнка заполнен — можно создавать сказки'
+              : `Заполните профиль ребёнка перед генерацией`}
           </span>
           {!isComplete && (
             <div style={{ display: 'flex', gap: '.4rem', flexWrap: 'wrap' }}>
@@ -105,37 +106,39 @@ export default function ProfilePage() {
         </div>
 
         {error  && <div className="alert alert-error">{error}</div>}
-        {saved  && <div className="alert alert-success">Профиль обновлён ✦</div>}
+        {saved  && <div className="alert alert-success">Профиль ребёнка обновлён ✦</div>}
 
         <form onSubmit={handleSave}>
           <div className="fields-grid">
             <div className="field field-full">
-              <label>Имя</label>
-              <input type="text" value={form.name} onChange={set('name')} placeholder="Как вас зовут?" maxLength={50} />
+              <label>Имя ребёнка</label>
+              <input type="text" value={form.name} onChange={set('name')} placeholder="Как зовут ребёнка?" maxLength={50} />
+              <p className="helper-text">Это имя можно будет автоматически использовать как главного героя истории.</p>
             </div>
 
             <div className="field">
               <label>Возраст</label>
-              <input type="number" value={form.age} onChange={set('age')} min={1} max={120} placeholder="Лет" />
+              <input type="number" value={form.age} onChange={set('age')} min={1} max={120} placeholder="Например, 7" />
             </div>
 
             <div className="field">
               <label>Пол</label>
               <select value={form.sex} onChange={set('sex')}>
                 <option value="">— выберите —</option>
-                <option value="male">Мужской</option>
-                <option value="female">Женский</option>
+                <option value="male">Мальчик</option>
+                <option value="female">Девочка</option>
               </select>
             </div>
 
             <div className="field field-full">
-              <label>Увлечение</label>
-              <textarea value={form.hobby} onChange={set('hobby')} placeholder="Что вам интересно?" maxLength={500} />
+              <label>Увлечения</label>
+              <textarea value={form.hobby} onChange={set('hobby')} placeholder="Что любит ребёнок? Например: динозавров, рисование, космос или футбол" maxLength={500} />
+              <p className="helper-text">Эти данные помогут создать сказку с ребёнком в главной роли и добавить знакомые ему детали.</p>
             </div>
           </div>
 
           <button type="submit" className="btn btn-primary" disabled={saving}>
-            {saving ? <><span className="spinner" /> Сохраняем…</> : '✦ Сохранить'}
+            {saving ? <><span className="spinner" /> Сохраняем…</> : '✦ Сохранить профиль'}
           </button>
         </form>
 
@@ -145,7 +148,7 @@ export default function ProfilePage() {
           className="btn"
           disabled={!isComplete}
           onClick={() => nav('/tale/new')}
-          title={!isComplete ? 'Сначала заполните профиль' : ''}
+          title={!isComplete ? 'Сначала заполните профиль ребёнка' : ''}
         >
           ✦ Создать сказку
         </button>
