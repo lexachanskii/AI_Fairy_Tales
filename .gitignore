@@ -1,7 +1,22 @@
+# Python
 __pycache__/
+*.py[cod]
 .venv/
 venv/
 env/
+
+# Environment variables
 .env
 *.env
+
+# IDE
 .vscode/
+.idea/
+
+# Node / Vite
+node_modules/
+client/node_modules/
+client/node_modules/.vite/
+
+# Archives
+*.zip
